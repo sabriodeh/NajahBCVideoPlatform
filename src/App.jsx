@@ -713,7 +713,7 @@ function AddVideo({ user, token, onSaved }) {
       <h2>أضف جلسة</h2>
       <p className="nj-lead">
         ارفع الفيديو على درايفك أولاً، اضبط مشاركته على «أي شخص لديه الرابط»، ثم الصق الرابط هنا.
-        تظهر الجلسة في المكتبة بعد مراجعة العمادة.
+        تظهر الجلسة في المكتبة فور الحفظ.
       </p>
 
       <div className="nj-panel">
@@ -801,7 +801,7 @@ function MyVideos({ user, token, onOpen, onAdd, refresh }) {
               <div className="nj-row-thumb"><Thumb id={r.drive_file_id} title={r.title} /></div>
               <div className="nj-row-main">
                 <h4>{r.title}</h4>
-                <span>{r.category} · {r.published ? "منشورة" : "قيد المراجعة"}</span>
+                <span>{r.category}</span>
               </div>
               <div className="nj-row-acts">
                 {r.published && <button className="nj-btn-ghost" onClick={() => onOpen(r)}>عرض</button>}
