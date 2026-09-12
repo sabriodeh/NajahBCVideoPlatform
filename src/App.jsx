@@ -270,7 +270,7 @@ const CSS = `
 .nj :focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:2px;}
 
 .nj-kufi{font-family:'Noto Kufi Arabic',serif;font-weight:600;}
-.nj-wrap{max-width:none;margin:0 auto;padding:0 40px;}
+.nj-wrap{max-width:1440px;margin:0 auto;padding:0 40px;}
 
 /* الترويسة */
 .nj-head{background:var(--wine);border-bottom:1px solid var(--brass);position:sticky;top:0;z-index:40;}
@@ -966,8 +966,9 @@ export default function App() {
       <footer className="nj-foot">
         <div className="nj-wrap nj-foot-in">
           <img src={LOGO} alt="" />
-          <span>كلية الأعمال والاتصال — جامعة النجاح الوطنية، نابلس</span>
-          <span>الجلسات مستضافة على درايف ناشريها</span>
+          <span>لجنة التحول الرقمي والذكاء الاصطناعي 
+            كلية الأعمال والاتصال — جامعة النجاح الوطنية</span>
+          
         </div>
       </footer>
     </div>
