@@ -9,7 +9,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
    ويُجبَر العضو على تغييرها عند أول دخول.
    ============================================================ */
 const SUPABASE_URL = "https://unbhwhglyxpasqnyeaoy.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_mtqTRLgW5sElFTp9-kQYqw_bv4T4GzT";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuYmh3aGdseXhwYXNxbnllYW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDI3NDgsImV4cCI6MjEwNDc3ODc0OH0.CT-XdePs74rXIFyhmeQ14b0A09HTqSSb4Wk3VlFTCEU";
 
 const DEMO = !SUPABASE_URL || !SUPABASE_ANON_KEY;
 
