@@ -34,6 +34,7 @@ function extractDriveId(url) {
 
 const thumbUrl = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
 const playerUrl = (id) => `https://drive.google.com/file/d/${id}/preview`;
+const fmtDate = (d) => (d ? String(d).slice(0, 10) : "");
 
 function checkPublic(fileId) {
   if (DEMO) return new Promise((r) => setTimeout(() => r(true), 700));
@@ -239,8 +240,7 @@ const api = {
    ============================================================ */
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 .nj {
   --wine:#901939;
   --wine-deep:#5E0F25;
@@ -269,15 +269,15 @@ const CSS = `
 .nj input,.nj textarea,.nj select{font-family:inherit;font-size:var(--t-base);}
 .nj :focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:2px;}
 
-.nj-kufi{font-family:'Reem Kufi',serif;font-weight:600;}
-.nj-wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+.nj-kufi{font-family:'Noto Kufi Arabic',serif;font-weight:600;}
+.nj-wrap{max-width:none;margin:0 auto;padding:0 40px;}
 
 /* الترويسة */
 .nj-head{background:var(--wine);border-bottom:1px solid var(--brass);position:sticky;top:0;z-index:40;}
 .nj-head-in{display:flex;align-items:center;gap:28px;height:76px;}
 .nj-brand{display:flex;align-items:center;gap:13px;color:var(--parchment);}
 .nj-logo{height:46px;width:auto;display:block;flex:none;}
-.nj-brand b{font-family:'Reem Kufi',serif;font-size:1.08rem;font-weight:600;display:block;}
+.nj-brand b{font-family:'Noto Kufi Arabic',serif;font-size:1.08rem;font-weight:600;display:block;}
 .nj-brand i{display:block;font-style:normal;font-size:var(--t-xs);color:var(--sand);opacity:.85;margin-top:-1px;}
 .nj-nav{display:flex;gap:4px;margin-inline-start:auto;align-items:center;}
 .nj-nav button{color:var(--sand);padding:8px 14px;font-size:var(--t-sm);border-radius:3px;}
@@ -290,7 +290,7 @@ const CSS = `
 .nj-hero{background:var(--wine-deep);color:var(--parchment);padding:56px 0 64px;overflow:hidden;}
 .nj-hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center;}
 .nj-eyebrow{font-size:var(--t-sm);color:var(--sand);opacity:.8;margin-bottom:14px;}
-.nj-hero h1{font-family:'Reem Kufi',serif;font-size:var(--t-2xl);font-weight:600;line-height:1.35;}
+.nj-hero h1{font-family:'Noto Kufi Arabic',serif;font-size:var(--t-2xl);font-weight:600;line-height:1.35;color:#fff;}
 .nj-hero-desc{color:var(--sand);margin-top:16px;max-width:46ch;opacity:.92;}
 .nj-hero-meta{display:flex;gap:20px;margin-top:22px;font-size:var(--t-sm);color:var(--sand);opacity:.75;flex-wrap:wrap;}
 
@@ -322,7 +322,7 @@ const CSS = `
 .nj-card:hover{border-color:var(--brass);}
 .nj-thumb{aspect-ratio:16/9;background:var(--wine);position:relative;display:grid;place-items:center;overflow:hidden;}
 .nj-thumb img{width:100%;height:100%;object-fit:cover;}
-.nj-thumb-fb{font-family:'Reem Kufi',serif;color:var(--sand);font-size:1.7rem;opacity:.5;}
+.nj-thumb-fb{font-family:'Noto Kufi Arabic',serif;color:var(--sand);font-size:1.7rem;opacity:.5;}
 .nj-card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;}
 .nj-card h3{font-size:var(--t-md);margin-bottom:8px;}
 .nj-card p{font-size:var(--t-sm);color:var(--muted);line-height:1.65;
@@ -334,7 +334,7 @@ const CSS = `
 /* النماذج */
 .nj-panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:32px;}
 .nj-page{padding:44px 0 72px;}
-.nj-page h2{font-family:'Reem Kufi',serif;font-size:var(--t-xl);margin-bottom:8px;}
+.nj-page h2{font-family:'Noto Kufi Arabic',serif;font-size:var(--t-xl);margin-bottom:8px;}
 .nj-lead{color:var(--muted);margin-bottom:28px;max-width:62ch;}
 .nj-field{margin-bottom:18px;}
 .nj-field label{display:block;font-size:var(--t-sm);font-weight:500;margin-bottom:6px;}
@@ -368,7 +368,7 @@ const CSS = `
 .nj-row-acts{display:flex;gap:8px;flex:none;}
 
 .nj-empty{text-align:center;padding:64px 24px;color:var(--muted);}
-.nj-empty h3{font-family:'Reem Kufi',serif;color:var(--ink);margin-bottom:8px;font-size:var(--t-md);}
+.nj-empty h3{font-family:'Noto Kufi Arabic',serif;color:var(--ink);margin-bottom:8px;font-size:var(--t-md);}
 
 .nj-foot{background:var(--wine-deep);color:var(--sand);padding:34px 0;font-size:var(--t-sm);}
 .nj-foot-in{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
@@ -459,7 +459,7 @@ function Home({ videos, onOpen }) {
             <div className="nj-hero-meta">
               <span>{featured.owner_name}</span>
               {featured.department && <span>{featured.department}</span>}
-              <span>{featured.created_at}</span>
+              <span>{fmtDate(featured.created_at)}</span>
             </div>
             <div style={{ marginTop: 26 }}>
               <button className="nj-btn"
@@ -536,7 +536,7 @@ function Watch({ v, onBack, videos, onOpen }) {
         <span>{v.owner_name || "عضو في الكلية"}</span>
         {v.department && <span>{v.department}</span>}
         <span className="nj-tag">{v.category}</span>
-        <span>{v.created_at}</span>
+        <span>{fmtDate(v.created_at)}</span>
       </div>
       <p style={{ marginTop: 16, maxWidth: "68ch", color: "var(--muted)" }}>{v.description}</p>
 
