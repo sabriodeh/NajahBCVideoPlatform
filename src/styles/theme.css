@@ -1,0 +1,493 @@
+/* ============================================================
+   نظام تصميم منصة كلية الأعمال والاتصال — جامعة النجاح الوطنية
+   ------------------------------------------------------------
+   كان هذا الملف نصاً داخل App.jsx يُحقن في style عند كل تصيير.
+   نقله إلى ملف حقيقي يتيح للمتصفح تخزينه مؤقتاً، ويُخرج نحو
+   ١٦٠ سطراً من حزمة الجافاسكربت.
+   ============================================================ */
+
+:root {
+  /* ألوان الهوية */
+  --wine: #901939;
+  --wine-deep: #5e0f25;
+  --wine-soft: #a93352;
+  --sand: #e6d7be;
+  --parchment: #f7f1e7;
+  --surface: #fffdf9;
+  --brass: #c0a063;
+  --ink: #2b1119;
+  --muted: #7a5f66;
+  --line: #e3d5bc;
+
+  /* ألوان دلالية للحالات */
+  --ok-bg: #f0f4ec;
+  --ok-line: #5c7a3f;
+  --ok-ink: #3c5228;
+  --bad-bg: #fbedef;
+  --bad-line: #901939;
+  --bad-ink: #5e0f25;
+  --wait-bg: #faf3e4;
+  --wait-line: #9c7b33;
+  --wait-ink: #6b5320;
+
+  /* سلّم الخط */
+  --t-xs: 0.78rem;
+  --t-sm: 0.9rem;
+  --t-base: 1rem;
+  --t-md: 1.2rem;
+  --t-lg: 1.5rem;
+  --t-xl: 1.95rem;
+  --t-2xl: 2.44rem;
+
+  /* أنصاف الأقطار: كانت ٢ و٣ و٤ بكسل عشوائية بلا رمز */
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* العمق: لم يكن في النظام أي ظل، والعمق كله بحدود شعرية */
+  --e-1: 0 1px 2px rgb(43 17 25 / 6%), 0 2px 8px rgb(43 17 25 / 4%);
+  --e-2: 0 4px 12px rgb(43 17 25 / 10%), 0 12px 32px rgb(43 17 25 / 8%);
+
+  /* الحركة: كان في النظام كله انتقال واحد */
+  --dur-fast: 150ms;
+  --dur: 220ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  direction: rtl;
+  text-align: right;
+  font-family: "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
+  font-size: var(--t-base);
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--parchment);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: var(--t-base);
+}
+
+a {
+  color: var(--wine);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.nj-kufi {
+  font-family: "Noto Kufi Arabic", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-weight: 600;
+}
+
+/* رابط التخطّي: شرط وصولية، يظهر عند التنقّل بلوحة المفاتيح فقط */
+.nj-skip {
+  position: absolute;
+  inset-inline-start: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--wine);
+  color: var(--parchment);
+  padding: 12px 20px;
+  border-radius: 0 0 var(--r-md) 0;
+}
+
+.nj-skip:focus {
+  inset-inline-start: 0;
+}
+
+/* ---------- التخطيط ---------- */
+
+.nj-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  /* كان الحشو ثابتاً عند ٤٠px حتى عرض ٣٢٠px */
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+
+.nj-page {
+  padding-block: clamp(28px, 5vw, 44px) clamp(48px, 8vw, 72px);
+}
+
+.nj-page h2 {
+  font-family: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  font-size: var(--t-xl);
+}
+
+.nj-lead {
+  color: var(--muted);
+  max-width: 62ch;
+  margin-top: 8px;
+}
+
+/* ---------- الترويسة ---------- */
+
+.nj-head {
+  background: var(--wine);
+  border-bottom: 1px solid var(--brass);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.nj-head-in {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 76px;
+}
+
+.nj-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: var(--parchment);
+  padding: 4px;
+  text-decoration: none;
+}
+
+.nj-brand b {
+  font-family: "Noto Kufi Arabic", sans-serif;
+  font-size: 1.08rem;
+  font-weight: 600;
+  display: block;
+}
+
+.nj-brand i {
+  display: block;
+  font-style: normal;
+  font-size: var(--t-xs);
+  color: var(--sand);
+  opacity: 0.85;
+}
+
+.nj-logo {
+  height: 46px;
+  width: auto;
+  display: block;
+  flex: none;
+}
+
+.nj-nav {
+  display: flex;
+  gap: 4px;
+  margin-inline-start: auto;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nj-nav a,
+.nj-nav button {
+  color: var(--sand);
+  padding: 10px 14px;
+  font-size: var(--t-sm);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  /* هدف لمس لا يقلّ عن ٤٤px */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.nj-nav a:hover,
+.nj-nav button:hover {
+  background: rgb(255 255 255 / 11%);
+}
+
+.nj-nav a.on {
+  color: #fff;
+  background: rgb(0 0 0 / 24%);
+}
+
+/* ---------- الأزرار ---------- */
+
+.nj-btn,
+.nj-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 22px;
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.nj-btn {
+  background: var(--wine);
+  color: var(--parchment);
+}
+
+.nj-btn:hover:not(:disabled) {
+  background: var(--wine-soft);
+}
+
+.nj-btn-ghost {
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--surface);
+}
+
+.nj-btn-ghost:hover:not(:disabled) {
+  border-color: var(--brass);
+  color: var(--ink);
+}
+
+.nj-btn:disabled,
+.nj-btn-ghost:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- الألواح والحقول ---------- */
+
+.nj-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--e-1);
+  padding: clamp(20px, 4vw, 32px);
+}
+
+.nj-field {
+  margin-bottom: 18px;
+}
+
+.nj-field label {
+  display: block;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.nj-field input,
+.nj-field textarea,
+.nj-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--parchment);
+  color: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.nj-field input:hover,
+.nj-field textarea:hover {
+  border-color: var(--brass);
+}
+
+.nj-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.nj-field [aria-invalid="true"] {
+  border-color: var(--wine);
+}
+
+.nj-hint {
+  font-size: var(--t-xs);
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.nj-hint-error {
+  color: var(--wine);
+  font-weight: 500;
+}
+
+/* ---------- التنبيهات ---------- */
+
+.nj-note {
+  border-inline-start: 3px solid;
+  border-radius: var(--r-sm);
+  padding: 12px 16px;
+  font-size: var(--t-sm);
+  margin-bottom: 18px;
+}
+
+.nj-note.ok {
+  background: var(--ok-bg);
+  border-color: var(--ok-line);
+  color: var(--ok-ink);
+}
+
+.nj-note.bad {
+  background: var(--bad-bg);
+  border-color: var(--bad-line);
+  color: var(--bad-ink);
+}
+
+.nj-note.wait {
+  background: var(--wait-bg);
+  border-color: var(--wait-line);
+  color: var(--wait-ink);
+}
+
+/* ---------- الحالات الفارغة والتحميل ---------- */
+
+.nj-empty {
+  text-align: center;
+  padding: clamp(40px, 8vw, 64px) 24px;
+  color: var(--muted);
+}
+
+.nj-empty h3 {
+  font-family: "Noto Kufi Arabic", sans-serif;
+  font-size: var(--t-md);
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.nj-skeleton {
+  background: linear-gradient(90deg, var(--line) 25%, var(--parchment) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  border-radius: var(--r-sm);
+  animation: njShimmer 1.4s linear infinite;
+}
+
+@keyframes njShimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- شاشة القفل ---------- */
+
+.nj-lock {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+}
+
+.nj-lock-box {
+  width: 100%;
+  max-width: 430px;
+}
+
+/* ---------- التذييل ---------- */
+
+.nj-foot {
+  background: var(--wine-deep);
+  color: var(--sand);
+  margin-top: auto;
+}
+
+.nj-foot-in {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-block: 34px;
+  font-size: var(--t-sm);
+}
+
+.nj-foot img {
+  height: 40px;
+  opacity: 0.9;
+}
+
+/* ---------- هيكل الصفحة ---------- */
+
+.nj-app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nj-main {
+  flex: 1;
+}
+
+/* ---------- الاستجابة ---------- */
+
+@media (max-width: 900px) {
+  .nj-head-in {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 620px) {
+  .nj-head-in {
+    padding-block: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nj-logo {
+    height: 38px;
+  }
+
+  .nj-nav {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 375px) {
+  .nj-brand b {
+    font-size: var(--t-sm);
+  }
+
+  .nj-nav a,
+  .nj-nav button {
+    padding: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
