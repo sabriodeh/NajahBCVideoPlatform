@@ -1,16 +1,14 @@
 -- ============================================================
--- ⚡ ملف واحد: انسخه كاملاً والصقه في SQL Editor ثم اضغط Run
+-- ملف واحد: انسخه كاملاً والصقه في SQL Editor ثم اضغط Run
 -- ------------------------------------------------------------
--- هذا دمج للملفات الثلاثة (0001 و 0002 و 0003) في لصقة واحدة.
--- آمن التكرار: إعادة تشغيله لا تُتلف شيئاً.
---
+-- دمج ملفات الترحيل في لصقة واحدة. آمن التكرار.
 -- لا يمسّ جدول videos ولا يحذف أي حساب.
 --
--- بعد التشغيل، شغّل من الطرفية:  node scripts/verify-rls.mjs
+-- بعد التشغيل:  node scripts/verify-rls.mjs
 -- ============================================================
 
 
--- ════════════ 0001_schema.sql ════════════
+-- ============ 0001_schema.sql ============
 
 -- ============================================================
 -- ٠٠٠١ — سكيما المواضيع والمداخل
@@ -100,7 +98,7 @@ create trigger entries_touch_updated_at
   for each row execute function public.touch_updated_at();
 
 
--- ════════════ 0002_rls.sql ════════════
+-- ============ 0002_rls.sql ============
 
 -- ============================================================
 -- ٠٠٠٢ — سياسات Row Level Security
@@ -136,6 +134,16 @@ $$;
 
 revoke all on function public.is_admin() from public, anon;
 grant execute on function public.is_admin() to authenticated;
+
+-- ---------- إغلاق تسريب profiles ----------
+-- ⚠️ هذه الأسماء رُصدت على قاعدة الإنتاج الفعلية. سياستان
+-- بالدور {public} والشرط true كانتا تكشفان كل صفوف profiles
+-- لأي زائر مجهول. إسقاط السياسات بأسماء «متوقَّعة» لا يكفي:
+-- لا بد من الأسماء الحقيقية، وإلا بقيت الثغرة مفتوحة بصمت.
+
+drop policy if exists "profiles are public"    on public.profiles;
+drop policy if exists "profiles readable"      on public.profiles;
+drop policy if exists "user edits own profile" on public.profiles;
 
 -- ---------- تفعيل RLS ----------
 
@@ -234,7 +242,7 @@ revoke all on public.entries  from anon;
 revoke all on public.profiles from anon;
 
 
--- ════════════ 0003_seed.sql ════════════
+-- ============ 0003_seed.sql ============
 
 -- ============================================================
 -- ٠٠٠٣ — المواضيع الأولية
@@ -304,3 +312,43 @@ select
 from public.sections s
 left join public.sections p on p.id = s.parent_id
 order by coalesce(p.sort_order, s.sort_order), s.parent_id nulls first, s.sort_order;
+
+
+-- ============ 0004_harden_functions.sql ============
+
+-- ============================================================
+-- ٠٠٠٤ — تقوية الدوال
+-- ------------------------------------------------------------
+-- بناءً على مستشار الأمان في Supabase بعد تطبيق الملفات السابقة.
+-- ============================================================
+
+-- handle_new_user كانت قابلة للاستدعاء من anon عبر
+-- /rest/v1/rpc/handle_new_user وهي SECURITY DEFINER.
+-- هي محفّز على auth.users، والمحفّزات تعمل بلا صلاحية تنفيذ،
+-- فسحبها لا يكسر إنشاء الحسابات ويغلق التعريض.
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+-- touch_updated_at بلا search_path مثبّت: قابلة للاختطاف بجدول
+-- مزيَّف في مخطط آخر ضمن مسار البحث.
+create or replace function public.touch_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+revoke all on function public.touch_updated_at() from public, anon, authenticated;
+
+-- ============================================================
+-- تحذيران يبقيان في المستشار، وهما مقصودان:
+--
+--   is_admin()             تعيد قيمة منطقية عن المستدعي نفسه فقط.
+--   admin_update_profile() تفحص is_admin() في أول سطر وترفع
+--                          استثناء «forbidden» لغير الأدمن — وهذا
+--                          هو الحارس نفسه، لا ثغرة فيه.
+-- ============================================================

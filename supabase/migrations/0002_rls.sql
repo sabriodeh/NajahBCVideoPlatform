@@ -33,6 +33,16 @@ $$;
 revoke all on function public.is_admin() from public, anon;
 grant execute on function public.is_admin() to authenticated;
 
+-- ---------- إغلاق تسريب profiles ----------
+-- ⚠️ هذه الأسماء رُصدت على قاعدة الإنتاج الفعلية. سياستان
+-- بالدور {public} والشرط true كانتا تكشفان كل صفوف profiles
+-- لأي زائر مجهول. إسقاط السياسات بأسماء «متوقَّعة» لا يكفي:
+-- لا بد من الأسماء الحقيقية، وإلا بقيت الثغرة مفتوحة بصمت.
+
+drop policy if exists "profiles are public"    on public.profiles;
+drop policy if exists "profiles readable"      on public.profiles;
+drop policy if exists "user edits own profile" on public.profiles;
+
 -- ---------- تفعيل RLS ----------
 
 alter table public.sections enable row level security;
