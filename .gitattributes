@@ -1,0 +1,15 @@
+# توحيد نهايات الأسطر: LF في المستودع دائماً، بصرف النظر عن نظام المساهم.
+# يُنفِّذ ما يعلنه .editorconfig (end_of_line = lf) بدل تركه اتفاقاً غير مضمون.
+* text=auto eol=lf
+
+# ملفات ثنائية — لا تُمسّ إطلاقاً
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# لا تُحتسب في إحصاءات اللغات ولا تُعرض في الـ diff افتراضياً
+package-lock.json linguist-generated=true

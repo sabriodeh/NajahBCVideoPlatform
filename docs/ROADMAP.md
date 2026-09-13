@@ -118,15 +118,23 @@ git add .github/workflows/ci.yml && git commit -m "chore: فحص آلي على �
 `listPublished()` تقرأها من `profiles` عبر join وتتجاهل المنسوخة:
 
 ```js
-// يُكتب عند الإضافة
+// يُكتب عند الإضافة (AddVideo)
 { owner_id, owner_name, department, division, ... }
 
-// يُقرأ عند العرض — من profiles لا من videos
+// سطر 176 — Home: join مع profiles، والمنسوخة مُتجاهَلة
 "videos?select=*,profiles(username,department,division)&published=eq.true"
+
+// سطر 198 — Admin: join كذلك
+"videos?select=*,profiles(username,department)&published=eq.false"
+
+// سطر 190 — MyVideos: بلا join، يقرأ الأعمدة المنسوخة وحدها
+`videos?select=*&owner_id=eq.${userId}`
 ```
 
-مصدران للحقيقة، وأحدهما ميّت. الأثر: تعديل قسم عضو لن ينعكس على `MyVideos`
-و`Admin` (تقرآن من `videos` مباشرة) بينما ينعكس على `Home`.
+مصدران للحقيقة، وأحدهما قديم. الأثر: تعديل قسم عضو أو اسمه ينعكس فوراً على
+`Home` و`Admin` (يقرآن من `profiles` عبر join)، لكن **`MyVideos` وحدها** تظل
+تعرض القيم المنسوخة وقت الإضافة. أي يرى العضو في «جلساتي» بيانات قديمة بينما
+يراها الجميع محدَّثة في المكتبة.
 
 المقترح: الاعتماد على join فقط وإسقاط الأعمدة المكرّرة، أو العكس — المهم اختيار
 واحد.
@@ -205,8 +213,21 @@ go(s.user.must_change_password ? "mine" : "mine");
 ## 🟡 12. حجم الحزمة
 
 ‏263 kB (‏89 kB مضغوطة). الشعار مضمَّن base64 داخل `App.jsx` بنحو 30 kB من
-مصدر الملف. المشروع يحوي أصلاً `fobc-logo-wine.png` و`fobc-logo-white.png`
-و`favicon.png` غير مستخدمة.
+مصدر الملف.
+
+ملفات غير مُشار إليها من أي مكان في الكود (تحقّقت بـ grep على `index.html`
+و`src/` و`public/`):
+
+| الملف | الحجم |
+| --- | --- |
+| `fobc-logo-wine.png` | 232 kB |
+| `fobc-logo-white.png` | 140 kB |
+| `favicon.png` (في الجذر) | 36 kB |
+| `src/assets/hero.png` | — |
+
+> ⚠️ **لا تحذف `public/favicon.svg`** — هو الأيقونة المستخدمة فعلاً عبر
+> `index.html:5`. الملف غير المستخدم هو `favicon.png` في جذر المستودع، وهما
+> مختلفان.
 
 المقترح: نقل الشعار إلى `public/` والإشارة إليه بمسار — يقلّل الحزمة ويسمح
 للمتصفح بتخزينه مؤقتاً. التعليق يبرّر التضمين بـ«كي يعمل في أي بيئة بلا مسارات

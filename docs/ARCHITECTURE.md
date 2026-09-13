@@ -59,9 +59,10 @@
 | `created_at` | date | تاريخ الإنشاء |
 
 > ⚠️ **تعارض قائم:** الأعمدة `owner_name` و`department` و`division` تُكتب في
-> `videos` عند الإضافة، لكن `listPublished()` تقرأها من `profiles` عبر join
-> وتتجاهل المنسوخة. أي تعديل على ملف العضو لن ينعكس على السجلات المنسوخة.
-> راجع [ROADMAP.md](ROADMAP.md#بيانات-مكرّرة-في-جدول-videos).
+> `videos` عند الإضافة، لكن `listPublished()` (سطر 176) و`listPending()`
+> (سطر 198) تقرآنها من `profiles` عبر join وتتجاهلان المنسوخة. الاستثناء
+> `listMine()` (سطر 190) — بلا join، فتعرض «جلساتي» وحدها القيم القديمة.
+> راجع [ROADMAP.md](ROADMAP.md#7-بيانات-مكرّرة-في-جدول-videos).
 
 ---
 
