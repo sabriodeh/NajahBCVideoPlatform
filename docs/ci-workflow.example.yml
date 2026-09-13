@@ -34,8 +34,5 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
+      - name: Check (lint + tests + build)
+        run: npm run check
