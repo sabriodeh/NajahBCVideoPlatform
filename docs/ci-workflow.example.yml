@@ -1,0 +1,41 @@
+# فحص آلي للـ Pull Requests — مقترح، غير مفعّل بعد.
+#
+# للتفعيل:
+#   cp docs/ci-workflow.example.yml .github/workflows/ci.yml
+#   gh auth refresh -s workflow      # دفع ملفات workflows يتطلب هذه الصلاحية
+#   git add .github/workflows/ci.yml
+#   git commit -m "chore: فحص آلي على الـ PR"
+#
+# لماذا منفصل عن deploy.yml: هذا يفحص قبل الدمج، وذاك ينشر بعده.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    name: فحص وبناء
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

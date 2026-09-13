@@ -1,16 +1,132 @@
-# React + Vite
+# مكتبة الأعمال والاتصال — منصة الفيديوهات
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+منصة نشر ومشاهدة الجلسات المرئية (ورش، محاضرات، ندوات، مشاريع طلابية) الخاصة
+بكلية الأعمال والاتصال في **جامعة النجاح الوطنية**.
 
-Currently, two official plugins are available:
+> **الموقع المنشور:** https://sabriodeh.github.io/NajahBCVideoPlatform/
+> **المستودع:** https://github.com/sabriodeh/NajahBCVideoPlatform
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## نظرة عامة
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **الواجهة:** React 19 + Vite 8 (تطبيق صفحة واحدة، عربي بالكامل، اتجاه RTL).
+- **قاعدة البيانات والمصادقة:** Supabase (REST + Auth).
+- **استضافة الفيديو:** Google Drive — تُخزَّن في قاعدة البيانات معرّفات الملفات
+  (`drive_file_id`) فقط، ويُعرض الفيديو عبر مشغّل درايف المضمّن.
+- **النشر:** GitHub Pages عبر GitHub Actions (فرع `gh-pages`).
 
-## Expanding the Oxlint configuration
+الحسابات **مغلقة**: لا يوجد تسجيل ذاتي. تُنشأ الحسابات من العمادة، وكلمة المرور
+المؤقتة هي البريد الجامعي نفسه، ويُجبَر العضو على تغييرها عند أول دخول.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## المتطلبات
+
+| الأداة | الإصدار |
+| --- | --- |
+| Node.js | 20 أو أحدث |
+| npm | 10 أو أحدث |
+
+---
+
+## التشغيل محلياً
+
+```bash
+git clone https://github.com/sabriodeh/NajahBCVideoPlatform.git
+cd NajahBCVideoPlatform
+npm ci
+npm run dev
+```
+
+ثم افتح الرابط الذي تطبعه الأداة (عادةً <http://localhost:5173/NajahBCVideoPlatform/>).
+
+> **ملاحظة:** `base` في [vite.config.js](vite.config.js) مضبوط على
+> `/NajahBCVideoPlatform/` لأجل GitHub Pages، لذلك يظهر هذا المسار في رابط
+> التطوير المحلي أيضاً. لا تُغيّره إلا إذا تغيّر اسم المستودع.
+
+---
+
+## الأوامر المتاحة
+
+| الأمر | الوظيفة |
+| --- | --- |
+| `npm run dev` | خادم التطوير مع إعادة التحميل الفوري (HMR) |
+| `npm run build` | بناء نسخة الإنتاج إلى `dist/` |
+| `npm run preview` | معاينة محلية لمخرجات البناء |
+| `npm run lint` | فحص الكود بـ oxlint |
+| `npm run lint:fix` | فحص مع إصلاح ما يمكن إصلاحه تلقائياً |
+| `npm run check` | فحص + بناء (نفس ما يفعله النشر) — شغّله قبل أي دفع |
+
+---
+
+## بنية المشروع
+
+```
+.
+├── .github/workflows/deploy.yml   # بناء ونشر تلقائي إلى GitHub Pages
+├── docs/                          # توثيق المشروع (ابدأ من هنا)
+│   ├── ARCHITECTURE.md            # البنية ونموذج البيانات
+│   ├── CONTRIBUTING.md            # أسلوب العمل والفروع
+│   ├── ROADMAP.md                 # الأعمال المقترحة والملاحظات التقنية
+│   └── ci-workflow.example.yml    # فحص مقترح للـ PR (غير مفعّل بعد)
+├── public/                        # ملفات ثابتة تُنسخ كما هي
+├── src/
+│   ├── App.jsx                    # التطبيق بالكامل (~976 سطراً)
+│   ├── main.jsx                   # نقطة الدخول
+│   ├── App.css / index.css        # تنسيقات القالب الأصلي
+│   └── assets/
+├── index.html
+└── vite.config.js
+```
+
+> معظم منطق التطبيق وتنسيقاته موجود حالياً في ملف واحد هو `src/App.jsx`.
+> يوجد مقترح لتقسيمه في [docs/ROADMAP.md](docs/ROADMAP.md) — لم يُنفَّذ بعد.
+
+---
+
+## الإعدادات والمفاتيح
+
+مفاتيح Supabase مكتوبة مباشرة في أعلى [src/App.jsx](src/App.jsx):
+
+```js
+const SUPABASE_URL = "https://....supabase.co";
+const SUPABASE_ANON_KEY = "eyJ...";
+```
+
+هذا **مقصود ومقبول**: مفتاح `anon` مصمَّم ليكون علنياً، وأي تطبيق ثابت يُضمِّنه في
+حزمة الجافاسكربت النهائية بغض النظر عن طريقة تمريره. الحماية الحقيقية تأتي من
+**Row Level Security** على جداول Supabase، لا من إخفاء المفتاح.
+
+⚠️ **قبل أي تعديل هنا:** السطر `const DEMO = !SUPABASE_URL || !SUPABASE_ANON_KEY;`
+يعني أن أي قيمة فارغة تُحوّل المنصة صامتةً إلى **وضع العرض التجريبي** ببيانات
+وهمية — دون أي رسالة خطأ في البناء. راجع [docs/ROADMAP.md](docs/ROADMAP.md).
+
+---
+
+## النشر
+
+النشر **تلقائي**: أي دفع إلى فرع `main` يُشغّل
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) الذي يبني المشروع
+ويدفع `dist/` إلى فرع `gh-pages`.
+
+- لا تُعدّل فرع `gh-pages` يدوياً — محتواه ناتج بناء يُعاد توليده في كل مرة.
+- أي دمج في `main` يعني نشراً مباشراً على الموقع العلني. راجع
+  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+
+---
+
+## التوثيق
+
+| المستند | المحتوى |
+| --- | --- |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | نموذج البيانات، الأدوار، تدفق المصادقة، الشاشات |
+| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | تسمية الفروع، الرسائل، دورة المراجعة |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | ملاحظات تقنية وأعمال مقترحة مرتَّبة بالأولوية |
+
+---
+
+## التواصل
+
+لجنة التحول الرقمي والذكاء الاصطناعي — كلية الأعمال والاتصال
+البريد: <business@najah.edu>
