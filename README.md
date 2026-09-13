@@ -1,16 +1,121 @@
-# React + Vite
+# منصة الذكاء الاصطناعي — كلية الأعمال والاتصال
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+بوابة مغلقة تابعة لـ**لجنة التحول الرقمي والذكاء الاصطناعي** في كلية الأعمال
+والاتصال بجامعة النجاح الوطنية. مخصّصة لأعضاء الهيئة التدريسية المسجّلين في
+قاعدة البيانات، ولا تُفتح إلا بتسجيل دخول.
 
-Currently, two official plugins are available:
+> **الموقع:** https://sabriodeh.github.io/NajahBCVideoPlatform/
+> **المستودع:** https://github.com/sabriodeh/NajahBCVideoPlatform
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ما تقدّمه
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| الموضوع | المحتوى |
+| --- | --- |
+| **وكلاء الذكاء الاصطناعي** | الوكلاء والـ Gems المعتمدة في الكلية: رابط الوكيل، وكيفية الدخول إليه، وفيديو شرح، وتعليمات ملزِمة، ومستندات مرفقة |
+| **سياسات الذكاء الاصطناعي** | فرعان: السياسات الخاصة بالمدرسين، والسياسات الخاصة بالطلبة |
 
-## Expanding the Oxlint configuration
+كل مدخل يجمع في صفحة واحدة: **رابط الوكيل** + **فيديو شرح** (درايف أو يوتيوب) +
+**تعليمات مهمّة** + **روابط مستندات** (جوجل دوكس، شيتس، PDF، مجلدات).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+**لا تُرفع ملفات إلى المنصة** — كل المحتوى روابط على درايف.
+
+---
+
+## البنية التقنية
+
+- **الواجهة:** React 19 + Vite 8، عربي بالكامل باتجاه RTL.
+- **التوجيه:** `react-router` بنمط `HashRouter` — روابط قابلة للمشاركة.
+- **قاعدة البيانات والمصادقة:** Supabase، والحماية بـ Row Level Security.
+- **الوسائط:** Google Drive (مقيّدة على نطاق `najah.edu`) ويوتيوب.
+- **النشر:** GitHub Pages عبر GitHub Actions.
+
+**الحسابات مغلقة:** لا تسجيل ذاتي. تُنشأ من العمادة، وكلمة المرور المؤقتة هي
+البريد الجامعي، ويُجبَر العضو على تغييرها عند أول دخول.
+
+**الصلاحيات:** الأدمن وحده يضيف المحتوى ويحرّره. بقية الأعضاء يتصفّحون.
+
+---
+
+## التشغيل محلياً
+
+```bash
+git clone https://github.com/sabriodeh/NajahBCVideoPlatform.git
+cd NajahBCVideoPlatform
+npm ci
+npm run dev
+```
+
+يتطلّب Node 20 أو أحدث. افتح <http://localhost:5173/NajahBCVideoPlatform/>.
+
+> `base` في [vite.config.js](vite.config.js) مضبوط على اسم المستودع لأجل
+> GitHub Pages، لذلك يظهر المسار في رابط التطوير المحلي أيضاً.
+
+---
+
+## الأوامر
+
+| الأمر | الوظيفة |
+| --- | --- |
+| `npm run dev` | خادم التطوير |
+| `npm run build` | بناء الإنتاج إلى `dist/` |
+| `npm test` | تشغيل الاختبارات |
+| `npm run lint` | فحص الكود |
+| `npm run check` | **فحص + اختبارات + بناء** — شغّله قبل أي دفع |
+| `node scripts/verify-rls.mjs` | التحقق من أن بوابة قاعدة البيانات تعمل |
+
+---
+
+## بنية المشروع
+
+```
+src/
+├── api/          قراءة وكتابة المواضيع والمداخل
+├── auth/         سياق المصادقة وحارسا الدخول والإدارة
+├── components/   المشغّل، الأغلفة، قائمة الروابط، الحقول، الحالات
+├── lib/          دوال نقية: استخراج المعرّفات، تصنيف الروابط، الأخطاء
+├── pages/        الدخول، المواضيع، الموضوع، المدخل، وadmin/
+└── styles/       نظام التصميم
+supabase/migrations/   سكيما قاعدة البيانات وسياسات RLS
+scripts/               أدوات التحقق
+```
+
+---
+
+## الإعداد الأولي
+
+قبل أن تعمل المنصة، يجب تنفيذ ملفات السكيما وسياسات RLS مرة واحدة على مشروع
+Supabase. الخطوات كاملة في **[docs/PHASE-0.md](docs/PHASE-0.md)**.
+
+ما دامت غير منفَّذة، تعمل المنصة وتعرض رسالة «المنصة قيد التهيئة» بدل أن تنهار.
+
+### مفاتيح Supabase
+
+مكتوبة في [src/config.js](src/config.js). هذا **مقصود**: مفتاح `anon` مصمَّم
+ليكون علنياً، وأي تطبيق ثابت يُضمّنه في حزمته النهائية. الحماية الحقيقية من
+**Row Level Security**، لا من إخفاء المفتاح.
+
+---
+
+## النشر
+
+أي دفع إلى `main` يبني المشروع وينشره تلقائياً على GitHub Pages.
+
+- لا تُعدّل فرع `gh-pages` — محتواه ناتج بناء يُعاد توليده.
+- أي دمج في `main` يعني نشراً مباشراً. راجع [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+
+---
+
+## التوثيق
+
+| المستند | المحتوى |
+| --- | --- |
+| [docs/PHASE-0.md](docs/PHASE-0.md) | **ابدأ هنا** — خطوات الإعداد على قاعدة البيانات ودرايف |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | نموذج البيانات، الأدوار، التوجيه، الوسائط |
+| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | الفروع، الرسائل، قائمة التحقق |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | ما أُنجز وما بقي |
+
+---
+
+لجنة التحول الرقمي والذكاء الاصطناعي — <business@najah.edu>
