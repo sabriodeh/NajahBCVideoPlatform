@@ -25,3 +25,8 @@ dist-ssr
 
 # Claude Code local settings
 .claude/
+
+# Environment files (لا تُرفع أي أسرار إلى المستودع)
+.env
+.env.*
+!.env.example

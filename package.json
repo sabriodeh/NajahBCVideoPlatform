@@ -1,13 +1,24 @@
 {
-  "name": "my-vite-app",
+  "name": "najah-bc-video-platform",
+  "description": "منصة فيديوهات كلية الأعمال والاتصال — جامعة النجاح الوطنية",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabriodeh/NajahBCVideoPlatform.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "lint:fix": "oxlint --fix",
+    "preview": "vite preview",
+    "check": "npm run lint && npm run build"
   },
   "dependencies": {
     "react": "^19.2.8",
