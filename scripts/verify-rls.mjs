@@ -126,14 +126,16 @@ async function memberChecks() {
 
   const read = await rest("sections?select=*", { token: session.token });
   const rows = read.ok ? await read.json() : [];
-  rows.length > 0 ? ok(`يقرأ المواضيع (${rows.length})`) : bad("لا يقرأ المواضيع — القراءة معطّلة للأعضاء");
+  if (rows.length > 0) ok(`يقرأ المواضيع (${rows.length})`);
+  else bad("لا يقرأ المواضيع — القراءة معطّلة للأعضاء");
 
   const write = await rest("entries", {
     method: "POST",
     token: session.token,
     body: { title: "عضو يحاول الكتابة" },
   });
-  write.ok ? bad("العضو استطاع الكتابة") : ok(`الكتابة مرفوضة (${write.status})`);
+  if (write.ok) bad("العضو استطاع الكتابة");
+  else ok(`الكتابة مرفوضة (${write.status})`);
 
   const promote = await rest(`profiles?id=eq.${session.id}`, {
     method: "PATCH",
@@ -178,7 +180,8 @@ async function adminChecks() {
   ok("الأدمن أنشأ مدخلاً");
 
   const del = await rest(`entries?id=eq.${row.id}`, { method: "DELETE", token: session.token });
-  del.ok ? ok("وحذفه (نُظّف الأثر)") : bad("تعذّر حذف المدخل التجريبي — احذفه يدوياً");
+  if (del.ok) ok("وحذفه (نُظّف الأثر)");
+  else bad("تعذّر حذف المدخل التجريبي — احذفه يدوياً");
 }
 
 /* ---------- التشغيل ---------- */
