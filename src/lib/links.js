@@ -54,6 +54,7 @@ export function isSafeHttpUrl(url) {
   if (typeof url !== "string" || !url) return false;
 
   /* نزع محارف التحكم ومسافات الأطراف قبل أي حكم */
+  // eslint-disable-next-line no-control-regex -- مقصود: هذه المحارف بالذات هي الخطر
   const cleaned = url.replace(/[\u0000-\u001F\u007F]/g, "").trim();
   if (!cleaned) return false;
 

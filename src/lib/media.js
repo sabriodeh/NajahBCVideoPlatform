@@ -46,7 +46,7 @@ export function extractYouTubeId(url) {
   if (!/(?:youtube\.com|youtube-nocookie\.com|youtu\.be)/i.test(url)) return null;
   return firstMatch(url, [
     new RegExp(`[?&]v=${YT}`),
-    new RegExp(`youtu\.be/${YT}`),
+    new RegExp(`youtu[.]be/${YT}`),
     new RegExp(`/embed/${YT}`),
     new RegExp(`/shorts/${YT}`),
     new RegExp(`/live/${YT}`),

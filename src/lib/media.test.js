@@ -132,3 +132,16 @@ describe("parseVideoUrl", () => {
     expect(parseVideoUrl(null)).toBeNull();
   });
 });
+
+describe("انحدارات مرصودة", () => {
+  /* داخل قالب نصّي يتحوّل "\." إلى "." فيصير النمط «أي محرف».
+     فكان m.youtube.com/youtuZbe/<id> يمرّ لأنه يجتاز بوابة النطاق
+     ثم يطابق النمط المتساهل. الإصلاح باستخدام [.] الصريحة. */
+  it("لا يقبل youtu[أي محرف]be كبديل عن youtu.be", () => {
+    expect(extractYouTubeId(`https://m.youtube.com/youtuZbe/${YT_ID}`)).toBeNull();
+  });
+
+  it("يبقى youtu.be الصحيح مقبولاً", () => {
+    expect(extractYouTubeId(`https://youtu.be/${YT_ID}`)).toBe(YT_ID);
+  });
+});
