@@ -95,15 +95,35 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
   }, []);
 
+  /**
+   * يغيّر كلمة المرور ثم يرفع راية الإجبار.
+   *
+   * العمليتان منفصلتان عند Supabase: تغيير كلمة المرور في نظام
+   * المصادقة، ورفع الراية في جدول profiles. قد تنجح الأولى وتفشل
+   * الثانية (سياسات RLS غير مطبَّقة، أو صلاحية العمود ناقصة، أو
+   * انقطاع الشبكة) — وعندها تكون كلمة المرور قد تغيّرت فعلاً بينما
+   * يظل الحارس يعيد المستخدم إلى شاشة التغيير إلى الأبد.
+   *
+   * لذلك تُعاد النتيجة مفصَّلة بدل ابتلاع فشل الخطوة الثانية.
+   * @returns {Promise<{passwordChanged: true, flagCleared: boolean}>}
+   */
   const changePassword = useCallback(
     async (newPassword) => {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw new Error(error.message || "تعذّر تغيير كلمة المرور.");
 
-      if (uid) {
-        await supabase.from("profiles").update({ must_change_password: false }).eq("id", uid);
+      if (!uid) return { passwordChanged: true, flagCleared: true };
+
+      const { error: flagError } = await supabase
+        .from("profiles")
+        .update({ must_change_password: false })
+        .eq("id", uid);
+
+      if (!flagError) {
         setProfile((p) => (p ? { ...p, must_change_password: false } : p));
       }
+
+      return { passwordChanged: true, flagCleared: !flagError };
     },
     [uid]
   );
