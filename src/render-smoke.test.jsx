@@ -16,6 +16,11 @@ import { AppShell } from "./components/AppShell.jsx";
 import Login from "./pages/Login.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import SectionsHome from "./pages/SectionsHome.jsx";
+import SectionView from "./pages/SectionView.jsx";
+import EntryView from "./pages/EntryView.jsx";
+import { VideoPlayer } from "./components/VideoPlayer.jsx";
+import { LinkList } from "./components/LinkList.jsx";
+import { EntryCover } from "./components/EntryCover.jsx";
 
 const baseAuth = {
   loading: false,
@@ -130,5 +135,85 @@ describe("AppShell", () => {
   it("يُظهر رابط الإدارة للأدمن وحده", () => {
     expect(render(tree, { isAdmin: true })).toContain("الإدارة");
     expect(render(tree, { isAdmin: false })).not.toContain("الإدارة");
+  });
+});
+
+/* ------------------------------------------------------------
+   المرحلة ٣
+   ------------------------------------------------------------ */
+
+describe("VideoPlayer", () => {
+  /* لا سبيل لاكتشاف إطار درايف الفارغ برمجياً — فهو من أصل مختلف.
+     فزر الفتح الخارجي والتنبيه ليسا تحسيناً بل المخرج الوحيد. */
+  it("يعرض زر «افتح في درايف» وتنبيه najah.edu دائماً لا عند الفشل فقط", () => {
+    const html = renderToString(<VideoPlayer kind="drive" videoRef="1abcDEFghij" title="س" />);
+    expect(html).toContain("افتح في درايف");
+    expect(html).toContain("najah.edu");
+    expect(html).toContain("/preview");
+  });
+
+  it("يستخدم nocookie ليوتيوب حمايةً للخصوصية", () => {
+    const html = renderToString(<VideoPlayer kind="youtube" videoRef="dQw4w9WgXcQ" title="س" />);
+    expect(html).toContain("youtube-nocookie.com/embed/dQw4w9WgXcQ");
+    expect(html).toContain("افتح في يوتيوب");
+  });
+
+  it("لا يصيّر شيئاً بلا فيديو", () => {
+    expect(renderToString(<VideoPlayer kind={null} videoRef={null} />)).toBe("");
+  });
+});
+
+describe("LinkList", () => {
+  it("يُسقط الروابط الخبيثة عند العرض", () => {
+    const html = renderToString(
+      <LinkList
+        links={[
+          { label: "سليم", url: "https://docs.google.com/document/d/1abcDEFghi/edit" },
+          { label: "خبيث", url: "javascript:alert(1)" },
+        ]}
+      />
+    );
+    expect(html).toContain("سليم");
+    expect(html).not.toContain("خبيث");
+    expect(html).not.toContain("javascript:");
+  });
+
+  it("يفتح الروابط في تبويب جديد بأمان", () => {
+    const html = renderToString(<LinkList links={[{ label: "أ", url: "https://example.com" }]} />);
+    expect(html).toContain('rel="noopener noreferrer"');
+  });
+
+  it("لا يصيّر شيئاً بلا روابط صالحة", () => {
+    expect(renderToString(<LinkList links={[{ url: "javascript:x" }]} />)).toBe("");
+    expect(renderToString(<LinkList links={[]} />)).toBe("");
+  });
+});
+
+describe("EntryCover", () => {
+  it("يستخدم مصغّرة يوتيوب الحقيقية", () => {
+    const html = renderToString(<EntryCover title="س" videoKind="youtube" videoRef="dQw4w9WgXcQ" />);
+    expect(html).toContain("img.youtube.com/vi/dQw4w9WgXcQ");
+  });
+
+  /* مصغّرات درايف تتطلّب ملفاً عاماً، وملفاتنا مقيّدة على النطاق
+     فتفشل حتماً — لذلك غلاف مولَّد بدل مربّع مكسور */
+  it("يولّد غلافاً لفيديو درايف بدل مصغّرة فاشلة", () => {
+    const html = renderToString(<EntryCover title="ورشة الأتمتة" videoKind="drive" videoRef="1abc" />);
+    expect(html).not.toContain("drive.google.com/thumbnail");
+    expect(html).toContain("linear-gradient");
+  });
+});
+
+describe("صفحات المرحلة ٣", () => {
+  it("SectionView تصيّر دون انهيار", () => {
+    expect(() => render(<SectionView />, { isAdmin: true }, "/section/ai-agents")).not.toThrow();
+  });
+
+  it("EntryView تصيّر دون انهيار", () => {
+    expect(() => render(<EntryView />, { isAdmin: false }, "/entry/1")).not.toThrow();
+  });
+
+  it("SectionsHome تصيّر دون انهيار", () => {
+    expect(() => render(<SectionsHome />, { displayName: "عضو" })).not.toThrow();
   });
 });

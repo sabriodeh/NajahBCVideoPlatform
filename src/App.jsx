@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { CONTACT, configError } from "./config.js";
 import { AuthProvider } from "./auth/AuthProvider.jsx";
@@ -7,6 +8,14 @@ import { AppShell } from "./components/AppShell.jsx";
 import Login from "./pages/Login.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import SectionsHome from "./pages/SectionsHome.jsx";
+import SectionView from "./pages/SectionView.jsx";
+import EntryView from "./pages/EntryView.jsx";
+import { FullScreenLoading } from "./components/Loading.jsx";
+
+/* شاشات الإدارة محمّلة على الطلب: أغلب الأعضاء ليسوا أدمن ولا
+   يفتحونها أبداً، فلا معنى لتحميل نموذج الإدارة كاملاً معهم. */
+const AdminEntries = lazy(() => import("./pages/admin/AdminEntries.jsx"));
+const EntryForm = lazy(() => import("./pages/admin/EntryForm.jsx"));
 
 /**
  * شاشة خطأ الإعداد.
@@ -36,20 +45,6 @@ function ConfigErrorScreen({ message }) {
   );
 }
 
-/** نائبة مؤقتة لشاشات الإدارة حتى المرحلة ٤. */
-function AdminPlaceholder() {
-  return (
-    <div className="nj-wrap nj-page">
-      <h2 className="nj-kufi">إدارة المحتوى</h2>
-      <p className="nj-lead">إضافة الوكلاء والسياسات وتحريرها.</p>
-      <div className="nj-empty" style={{ marginTop: 28 }}>
-        <h3>قيد الإنشاء</h3>
-        <p>ستتوفّر إدارة المداخل بعد تطبيق سكيما قاعدة البيانات.</p>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   if (configError) return <ConfigErrorScreen message={configError} />;
 
@@ -66,9 +61,34 @@ export default function App() {
 
           <Route element={<AppShell />}>
             <Route path="/" element={<SectionsHome />} />
+            <Route path="/section/:slug" element={<SectionView />} />
+            <Route path="/entry/:id" element={<EntryView />} />
 
             <Route element={<RequireAdmin />}>
-              <Route path="/admin" element={<AdminPlaceholder />} />
+              <Route
+                path="/admin"
+                element={
+                  <Suspense fallback={<FullScreenLoading label="جارٍ فتح لوحة الإدارة…" />}>
+                    <AdminEntries />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/admin/new"
+                element={
+                  <Suspense fallback={<FullScreenLoading label="جارٍ فتح النموذج…" />}>
+                    <EntryForm />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/admin/edit/:id"
+                element={
+                  <Suspense fallback={<FullScreenLoading label="جارٍ فتح النموذج…" />}>
+                    <EntryForm />
+                  </Suspense>
+                }
+              />
             </Route>
           </Route>
         </Route>
